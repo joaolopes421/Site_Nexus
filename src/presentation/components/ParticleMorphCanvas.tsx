@@ -112,15 +112,20 @@ function getShapePoints(step: number): Array<{ x: number; y: number }> {
   const context = source.getContext('2d', { willReadFrequently: true })
   if (!context) return []
 
-  traceSymbol(context, step)
-  const { data } = context.getImageData(0, 0, SOURCE_WIDTH, SOURCE_HEIGHT)
-  const points: Array<{ x: number; y: number }> = []
-  for (let y = 0; y < SOURCE_HEIGHT; y += 3) {
-    for (let x = 0; x < SOURCE_WIDTH; x += 3) {
-      if (data[(y * SOURCE_WIDTH + x) * 4 + 3] > 80) points.push({ x, y })
+  try {
+    traceSymbol(context, step)
+    const { data } = context.getImageData(0, 0, SOURCE_WIDTH, SOURCE_HEIGHT)
+    const points: Array<{ x: number; y: number }> = []
+    for (let y = 0; y < SOURCE_HEIGHT; y += 3) {
+      for (let x = 0; x < SOURCE_WIDTH; x += 3) {
+        if (data[(y * SOURCE_WIDTH + x) * 4 + 3] > 80) points.push({ x, y })
+      }
     }
+    return points
+  } catch (error) {
+    console.error('Não foi possível gerar a forma de partículas.', error)
+    return []
   }
-  return points
 }
 
 export function ParticleMorphCanvas({ step, label }: { step: number; label: string }) {
@@ -135,7 +140,12 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
 
   useEffect(() => {
     const canvas = canvasRef.current
-    const context = canvas?.getContext('2d')
+    let context: CanvasRenderingContext2D | null = null
+    try {
+      context = canvas?.getContext('2d') ?? null
+    } catch (error) {
+      console.error('O canvas de partículas não está disponível neste navegador.', error)
+    }
     if (!canvas || !context) return
 
     let frame = 0
@@ -148,7 +158,7 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
     let particleCount = 0
     let isVisible = false
     let particles: Particle[] = []
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
     let schedule = () => {}
 
     const resize = () => {
@@ -156,7 +166,7 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
       width = bounds.width
       height = bounds.height
       if (!width || !height) return
-      const isMobile = window.matchMedia('(max-width: 640px)').matches
+      const isMobile = window.matchMedia?.('(max-width: 640px)').matches ?? width <= 640
       const pixelRatio = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 1.5)
       const nextParticleCount = Math.min(MAX_PARTICLE_COUNT, Math.max(140, Math.round(width * 0.48)))
       if (nextParticleCount !== particleCount) {
@@ -230,28 +240,42 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
     }
     scheduleRef.current = schedule
 
-    const resizeObserver = new ResizeObserver(resize)
-    resizeObserver.observe(canvas)
-    const visibilityObserver = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting
-        if (isVisible) {
-          schedule()
-        } else if (frame !== 0) {
-          window.cancelAnimationFrame(frame)
-          frame = 0
-        }
-      },
-      { rootMargin: '120px 0px' },
-    )
-    visibilityObserver.observe(canvas)
+    const resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null
+    if (resizeObserver) {
+      resizeObserver.observe(canvas)
+    } else {
+      window.addEventListener('resize', resize, { passive: true })
+    }
+
+    const visibilityObserver =
+      typeof IntersectionObserver !== 'undefined'
+        ? new IntersectionObserver(
+            ([entry]) => {
+              isVisible = entry?.isIntersecting ?? true
+              if (isVisible) {
+                schedule()
+              } else if (frame !== 0) {
+                window.cancelAnimationFrame(frame)
+                frame = 0
+              }
+            },
+            { rootMargin: '120px 0px' },
+          )
+        : null
+    if (visibilityObserver) {
+      visibilityObserver.observe(canvas)
+    } else {
+      isVisible = true
+    }
     resize()
+    schedule()
 
     return () => {
       if (frame !== 0) window.cancelAnimationFrame(frame)
       scheduleRef.current = null
-      resizeObserver.disconnect()
-      visibilityObserver.disconnect()
+      resizeObserver?.disconnect()
+      visibilityObserver?.disconnect()
+      if (!resizeObserver) window.removeEventListener('resize', resize)
     }
   }, [])
 
