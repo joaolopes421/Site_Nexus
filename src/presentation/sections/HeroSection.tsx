@@ -6,15 +6,21 @@ export function HeroSection() {
   return (
     <section id="inicio" aria-labelledby="hero-title" className="relative isolate overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
       <div aria-hidden="true" className="absolute inset-0 -z-10">
-        <img
-          src="/images/hero-network.png"
-          alt=""
-          className="h-full w-full object-cover opacity-40"
-          fetchPriority="high"
-        />
+        <picture className="absolute inset-0">
+          <source media="(max-width: 640px)" srcSet="/images/hero-network-mobile.webp" type="image/webp" />
+          <img
+            src="/images/hero-network.webp"
+            alt=""
+            width={800}
+            height={800}
+            className="h-full w-full object-cover opacity-40"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
         <div className="absolute inset-0 bg-gradient-to-b from-nexus-bg/40 via-nexus-bg/70 to-nexus-bg" />
         <div className="bg-grid absolute inset-0" />
-        <div className="absolute top-1/4 left-1/2 size-[36rem] -translate-x-1/2 animate-pulse-glow rounded-full bg-nexus-cobalt/25 blur-[120px]" />
+        <div className="absolute top-1/4 left-1/2 size-[28rem] -translate-x-1/2 rounded-full bg-nexus-cobalt/25 blur-[72px] md:size-[36rem] md:animate-pulse-glow md:blur-[120px]" />
       </div>
 
       <div className="mx-auto flex max-w-5xl flex-col items-center px-5 text-center md:px-8">

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 
-const PARTICLE_COUNT = 300
+const MAX_PARTICLE_COUNT = 260
 const SOURCE_WIDTH = 480
 const SOURCE_HEIGHT = 320
 
@@ -11,7 +11,6 @@ type Particle = {
   y: number
   targetX: number
   targetY: number
-  phase: number
 }
 
 function traceSymbol(context: CanvasRenderingContext2D, step: number) {
@@ -127,9 +126,11 @@ function getShapePoints(step: number): Array<{ x: number; y: number }> {
 export function ParticleMorphCanvas({ step, label }: { step: number; label: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const currentStepRef = useRef(step)
+  const scheduleRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
     currentStepRef.current = step
+    scheduleRef.current?.()
   }, [step])
 
   useEffect(() => {
@@ -144,81 +145,113 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
     let offsetX = 0
     let offsetY = 0
     let activeStep = -1
+    let particleCount = 0
+    let isVisible = false
     let particles: Particle[] = []
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let schedule = () => {}
 
     const resize = () => {
       const bounds = canvas.getBoundingClientRect()
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2)
       width = bounds.width
       height = bounds.height
+      if (!width || !height) return
+      const isMobile = window.matchMedia('(max-width: 640px)').matches
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 1.5)
+      const nextParticleCount = Math.min(MAX_PARTICLE_COUNT, Math.max(140, Math.round(width * 0.48)))
+      if (nextParticleCount !== particleCount) {
+        particleCount = nextParticleCount
+        particles = []
+        activeStep = -1
+      }
       canvas.width = Math.round(width * pixelRatio)
       canvas.height = Math.round(height * pixelRatio)
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
       scale = Math.min(width / SOURCE_WIDTH, height / SOURCE_HEIGHT)
       offsetX = (width - SOURCE_WIDTH * scale) / 2
       offsetY = (height - SOURCE_HEIGHT * scale) / 2
+      schedule()
     }
 
-    const resizeObserver = new ResizeObserver(resize)
-    resizeObserver.observe(canvas)
-    resize()
+    const render = () => {
+      frame = 0
+      if (!isVisible) return
 
-    const render = (time: number) => {
       const requestedStep = currentStepRef.current
       if (requestedStep !== activeStep) {
         const points = getShapePoints(requestedStep)
         if (particles.length === 0) {
-          particles = Array.from({ length: PARTICLE_COUNT }, (_, index) => ({
-            x: SOURCE_WIDTH / 2 + (Math.random() - 0.5) * SOURCE_WIDTH * 0.8,
-            y: SOURCE_HEIGHT / 2 + (Math.random() - 0.5) * SOURCE_HEIGHT * 0.8,
+          particles = Array.from({ length: particleCount }, () => ({
+            x: reducedMotion ? SOURCE_WIDTH / 2 : SOURCE_WIDTH / 2 + (Math.random() - 0.5) * SOURCE_WIDTH * 0.8,
+            y: reducedMotion ? SOURCE_HEIGHT / 2 : SOURCE_HEIGHT / 2 + (Math.random() - 0.5) * SOURCE_HEIGHT * 0.8,
             targetX: SOURCE_WIDTH / 2,
             targetY: SOURCE_HEIGHT / 2,
-            phase: index * 0.31,
           }))
         }
         particles.forEach((particle, index) => {
-          const point = points[Math.floor((index * points.length) / PARTICLE_COUNT)] ?? {
+          const point = points[Math.floor((index * points.length) / particleCount)] ?? {
             x: SOURCE_WIDTH / 2,
             y: SOURCE_HEIGHT / 2,
           }
-          particle.targetX = point.x + (Math.random() - 0.5) * 2.4
-          particle.targetY = point.y + (Math.random() - 0.5) * 2.4
+          particle.targetX = point.x + (reducedMotion ? 0 : (Math.random() - 0.5) * 2.4)
+          particle.targetY = point.y + (reducedMotion ? 0 : (Math.random() - 0.5) * 2.4)
+          if (reducedMotion) {
+            particle.x = particle.targetX
+            particle.y = particle.targetY
+          }
         })
         activeStep = requestedStep
       }
 
       context.clearRect(0, 0, width, height)
-      const glow = context.createRadialGradient(width / 2, height / 2, 10, width / 2, height / 2, width * 0.52)
-      glow.addColorStop(0, 'rgba(0, 82, 212, 0.13)')
-      glow.addColorStop(1, 'rgba(9, 13, 22, 0)')
-      context.fillStyle = glow
-      context.fillRect(0, 0, width, height)
-
       context.save()
       context.translate(offsetX, offsetY)
       context.scale(scale, scale)
-      const easing = reducedMotion ? 0.14 : 0.075
+      const easing = 0.11
+      let stillMoving = false
       particles.forEach((particle, index) => {
-        particle.x += (particle.targetX - particle.x) * easing
-        particle.y += (particle.targetY - particle.y) * easing
-        const pulse = reducedMotion ? 1 : 0.76 + Math.sin(time / 720 + particle.phase) * 0.2
-        const radius = (index % 7 === 0 ? 2 : 1.35) * pulse
+        const dx = particle.targetX - particle.x
+        const dy = particle.targetY - particle.y
+        if (Math.abs(dx) > 0.45 || Math.abs(dy) > 0.45) stillMoving = true
+        particle.x += dx * easing
+        particle.y += dy * easing
         context.beginPath()
-        context.arc(particle.x, particle.y, radius, 0, Math.PI * 2)
-        context.fillStyle = index % 5 === 0 ? 'rgba(0, 210, 255, 0.98)' : 'rgba(112, 166, 255, 0.82)'
-        context.shadowColor = index % 5 === 0 ? '#00d2ff' : '#0052d4'
-        context.shadowBlur = reducedMotion ? 3 : 8
+        context.arc(particle.x, particle.y, index % 6 === 0 ? 2 : 1.35, 0, Math.PI * 2)
+        context.fillStyle = index % 6 === 0 ? 'rgba(0, 210, 255, 0.98)' : 'rgba(112, 166, 255, 0.82)'
         context.fill()
       })
       context.restore()
-      frame = window.requestAnimationFrame(render)
+
+      if (stillMoving) frame = window.requestAnimationFrame(render)
     }
 
-    frame = window.requestAnimationFrame(render)
+    schedule = () => {
+      if (isVisible && frame === 0) frame = window.requestAnimationFrame(render)
+    }
+    scheduleRef.current = schedule
+
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(canvas)
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting
+        if (isVisible) {
+          schedule()
+        } else if (frame !== 0) {
+          window.cancelAnimationFrame(frame)
+          frame = 0
+        }
+      },
+      { rootMargin: '120px 0px' },
+    )
+    visibilityObserver.observe(canvas)
+    resize()
+
     return () => {
-      window.cancelAnimationFrame(frame)
+      if (frame !== 0) window.cancelAnimationFrame(frame)
+      scheduleRef.current = null
       resizeObserver.disconnect()
+      visibilityObserver.disconnect()
     }
   }, [])
 
