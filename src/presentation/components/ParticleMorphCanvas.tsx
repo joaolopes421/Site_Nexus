@@ -5,6 +5,20 @@ import { useEffect, useRef } from 'react'
 const MAX_PARTICLE_COUNT = 260
 const SOURCE_WIDTH = 480
 const SOURCE_HEIGHT = 320
+const MOBILE_BREAKPOINT = 768
+const MOBILE_PARTICLE_RATIO = 0.4
+
+/** Decide o perfil de densidade e resolução a partir do viewport e do canvas. */
+export function getParticleRenderSettings(canvasWidth: number, viewportWidth: number, devicePixelRatio: number) {
+  const isMobile = viewportWidth < MOBILE_BREAKPOINT
+  const desktopParticleCount = Math.min(MAX_PARTICLE_COUNT, Math.max(140, Math.round(canvasWidth * 0.48)))
+
+  return {
+    isMobile,
+    particleCount: isMobile ? Math.max(1, Math.round(desktopParticleCount * MOBILE_PARTICLE_RATIO)) : desktopParticleCount,
+    pixelRatio: Math.min(devicePixelRatio || 1, isMobile ? 1 : 1.5),
+  }
+}
 
 type Particle = {
   x: number
@@ -96,9 +110,13 @@ function traceSymbol(context: CanvasRenderingContext2D, step: number) {
     context.lineTo(278, 150)
     context.stroke()
     context.beginPath()
+    context.moveTo(190, 194)
     context.arc(185, 194, 5, 0, Math.PI * 2)
+    context.moveTo(221, 165)
     context.arc(216, 165, 5, 0, Math.PI * 2)
+    context.moveTo(244, 183)
     context.arc(239, 183, 5, 0, Math.PI * 2)
+    context.moveTo(283, 132)
     context.arc(278, 132, 5, 0, Math.PI * 2)
     context.fillStyle = '#ffffff'
     context.fill()
@@ -154,6 +172,7 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
     let scale = 1
     let offsetX = 0
     let offsetY = 0
+    let pixelRatio = 0
     let activeStep = -1
     let particleCount = 0
     let isVisible = false
@@ -163,12 +182,19 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
 
     const resize = () => {
       const bounds = canvas.getBoundingClientRect()
-      width = bounds.width
-      height = bounds.height
-      if (!width || !height) return
-      const isMobile = window.matchMedia?.('(max-width: 640px)').matches ?? width <= 640
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 1.5)
-      const nextParticleCount = Math.min(MAX_PARTICLE_COUNT, Math.max(140, Math.round(width * 0.48)))
+      const nextWidth = bounds.width
+      const nextHeight = bounds.height
+      if (!nextWidth || !nextHeight) return
+
+      const settings = getParticleRenderSettings(nextWidth, window.innerWidth, window.devicePixelRatio || 1)
+      const nextParticleCount = settings.particleCount
+      if (nextWidth === width && nextHeight === height && settings.pixelRatio === pixelRatio && nextParticleCount === particleCount) {
+        return
+      }
+
+      width = nextWidth
+      height = nextHeight
+      pixelRatio = settings.pixelRatio
       if (nextParticleCount !== particleCount) {
         particleCount = nextParticleCount
         particles = []
@@ -190,6 +216,10 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
       const requestedStep = currentStepRef.current
       if (requestedStep !== activeStep) {
         const points = getShapePoints(requestedStep)
+        if (points.length === 0 || points.some((point) => !Number.isFinite(point.x) || !Number.isFinite(point.y))) {
+          return
+        }
+
         if (particles.length === 0) {
           particles = Array.from({ length: particleCount }, () => ({
             x: reducedMotion ? SOURCE_WIDTH / 2 : SOURCE_WIDTH / 2 + (Math.random() - 0.5) * SOURCE_WIDTH * 0.8,
@@ -199,10 +229,8 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
           }))
         }
         particles.forEach((particle, index) => {
-          const point = points[Math.floor((index * points.length) / particleCount)] ?? {
-            x: SOURCE_WIDTH / 2,
-            y: SOURCE_HEIGHT / 2,
-          }
+          const point = points[Math.floor((index * points.length) / particleCount)]
+          if (!point) return
           particle.targetX = point.x + (reducedMotion ? 0 : (Math.random() - 0.5) * 2.4)
           particle.targetY = point.y + (reducedMotion ? 0 : (Math.random() - 0.5) * 2.4)
           if (reducedMotion) {
@@ -241,11 +269,8 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
     scheduleRef.current = schedule
 
     const resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null
-    if (resizeObserver) {
-      resizeObserver.observe(canvas)
-    } else {
-      window.addEventListener('resize', resize, { passive: true })
-    }
+    resizeObserver?.observe(canvas)
+    window.addEventListener('resize', resize, { passive: true })
 
     const visibilityObserver =
       typeof IntersectionObserver !== 'undefined'
@@ -275,7 +300,7 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
       scheduleRef.current = null
       resizeObserver?.disconnect()
       visibilityObserver?.disconnect()
-      if (!resizeObserver) window.removeEventListener('resize', resize)
+      window.removeEventListener('resize', resize)
     }
   }, [])
 

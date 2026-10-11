@@ -6,7 +6,7 @@ import { cn } from '../lib/cn'
 
 export function ServicesSection() {
   return (
-    <section id="servicos" aria-labelledby="servicos-title" className="relative py-24 md:py-32">
+    <section aria-labelledby="servicos-title" className="relative py-24 md:py-32">
       <div aria-hidden="true" className="absolute inset-x-0 top-1/3 -z-10 mx-auto h-96 max-w-4xl rounded-full bg-nexus-cyan/10 blur-[140px]" />
 
       <div className="mx-auto max-w-7xl px-5 md:px-8">

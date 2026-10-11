@@ -4,7 +4,7 @@ import { SectionHeader } from '../components/SectionHeader'
 
 export function PillarsSection() {
   return (
-    <section id="pilares" aria-labelledby="pilares-title" className="relative py-24 md:py-32">
+    <section aria-labelledby="pilares-title" className="relative py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <SectionHeader
           id="pilares-title"

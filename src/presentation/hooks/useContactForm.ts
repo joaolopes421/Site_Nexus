@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FocusEvent, type FormEvent } from 'react'
+import { useCallback, useRef, useState, type ChangeEvent, type FocusEvent, type FormEvent } from 'react'
 import { submitContactForm } from '@/application/use-cases/submitContactForm'
 import { validateContactField, validateContactForm } from '@/application/use-cases/validateContactForm'
 import {
@@ -18,32 +18,37 @@ type BlurEvent = FocusEvent<HTMLInputElement | HTMLTextAreaElement>
 export function useContactForm(repository: ContactRepository) {
   const [values, setValues] = useState<ContactMessage>(EMPTY_CONTACT_MESSAGE)
   const [errors, setErrors] = useState<ContactErrors>({})
-  const [touched, setTouched] = useState<Partial<Record<ContactField, boolean>>>({})
+  const touched = useRef<Partial<Record<ContactField, boolean>>>({})
   const [status, setStatus] = useState<FormStatus>('idle')
   const [feedback, setFeedback] = useState('')
+  const valuesRef = useRef(values)
+  const statusRef = useRef<FormStatus>('idle')
 
-  const handleChange = (event: FieldEvent) => {
+  const handleChange = useCallback((event: FieldEvent) => {
     const field = event.target.name as ContactField
     const value = event.target.value
-    setValues((prev) => ({ ...prev, [field]: value }))
-    if (touched[field]) {
+    const nextValues = { ...valuesRef.current, [field]: value }
+    valuesRef.current = nextValues
+    setValues(nextValues)
+    if (touched.current[field]) {
       setErrors((prev) => ({ ...prev, [field]: validateContactField(field, value) }))
     }
-  }
+  }, [])
 
-  const handleBlur = (event: BlurEvent) => {
+  const handleBlur = useCallback((event: BlurEvent) => {
     const field = event.target.name as ContactField
-    setTouched((prev) => ({ ...prev, [field]: true }))
+    touched.current[field] = true
     setErrors((prev) => ({ ...prev, [field]: validateContactField(field, event.target.value) }))
-  }
+  }, [])
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (status === 'submitting') return
+    if (statusRef.current === 'submitting') return
 
-    const validation = validateContactForm(values)
+    const currentValues = valuesRef.current
+    const validation = validateContactForm(currentValues)
     setErrors(validation)
-    setTouched({ name: true, company: true, email: true, phone: true, message: true })
+    touched.current = { name: true, company: true, email: true, phone: true, message: true }
 
     const firstInvalid = Object.keys(validation)[0]
     if (firstInvalid) {
@@ -51,20 +56,29 @@ export function useContactForm(repository: ContactRepository) {
       return
     }
 
+    statusRef.current = 'submitting'
     setStatus('submitting')
-    const result = await submitContactForm(repository, values)
+    let result: Awaited<ReturnType<typeof submitContactForm>>
+    try {
+      result = await submitContactForm(repository, currentValues)
+    } catch {
+      result = { ok: false as const, error: 'Não foi possível enviar a mensagem. Tente novamente.' }
+    }
 
     if (result.ok) {
+      statusRef.current = 'success'
       setStatus('success')
       setFeedback('Mensagem enviada com sucesso! A nossa equipa responderá em até 24 horas úteis.')
+      valuesRef.current = EMPTY_CONTACT_MESSAGE
       setValues(EMPTY_CONTACT_MESSAGE)
-      setTouched({})
+      touched.current = {}
       setErrors({})
     } else {
+      statusRef.current = 'error'
       setStatus('error')
       setFeedback(result.error)
     }
-  }
+  }, [repository])
 
   return { values, errors, status, feedback, handleChange, handleBlur, handleSubmit }
 }

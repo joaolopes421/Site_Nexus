@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { ArrowUpRight, Boxes, Search, TrendingUp, Zap } from 'lucide-react'
 import { DIFFERENTIALS } from '@/data/datasource/siteContent'
 import { ParticleMorphCanvas } from '../components/ParticleMorphCanvas'
@@ -9,12 +9,74 @@ import { cn } from '../lib/cn'
 
 const STEP_ICONS = [Search, Boxes, Zap, TrendingUp]
 
-export function DifferentialsSection() {
-  const [activeStep, setActiveStep] = useState(0)
-  const current = DIFFERENTIALS[activeStep]
+interface StepOptionProps {
+  item: (typeof DIFFERENTIALS)[number]
+  index: number
+  selected: boolean
+  onSelect: (index: number) => void
+}
+
+const StepOption = memo(function StepOption({ item, index, selected, onSelect }: StepOptionProps) {
+  const Icon = STEP_ICONS[index]
+  const handleClick = useCallback(() => onSelect(index), [index, onSelect])
 
   return (
-    <section id="diferenciais" aria-labelledby="diferenciais-title" className="relative overflow-hidden py-24 md:py-32">
+    <li>
+      <button
+        type="button"
+        onClick={handleClick}
+        aria-pressed={selected}
+        className={cn(
+          'group flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-[transform,background-color,border-color] duration-300 md:p-5',
+          selected
+            ? 'border-nexus-cyan/30 bg-nexus-cyan/[0.07] shadow-[0_0_32px_-18px_rgba(0,210,255,0.55)]'
+            : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.14] hover:bg-white/[0.04]',
+        )}
+      >
+        <span
+          className={cn(
+            'grid size-11 shrink-0 place-items-center rounded-xl border transition-colors',
+            selected
+              ? 'border-nexus-cyan/30 bg-nexus-cyan/10 text-nexus-cyan'
+              : 'border-white/[0.08] bg-white/[0.03] text-nexus-muted group-hover:text-white',
+          )}
+        >
+          <Icon className="size-5" aria-hidden="true" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.18em] text-nexus-cyan/80">
+            {item.step}
+            <span className="h-px w-5 bg-current opacity-40" />
+          </span>
+          <span className="mt-1 block font-display text-lg font-semibold text-white">{item.title}</span>
+          <span
+            className={cn(
+              'grid transition-[grid-template-rows,opacity] duration-300',
+              selected ? 'mt-1 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
+            )}
+          >
+            <span className="overflow-hidden text-sm leading-relaxed text-nexus-muted">{item.description}</span>
+          </span>
+        </span>
+        <ArrowUpRight
+          className={cn(
+            'mt-1 size-4 shrink-0 transition-[transform,opacity,color]',
+            selected ? 'translate-x-0 text-nexus-cyan opacity-100' : '-translate-x-1 text-nexus-muted opacity-0 group-hover:translate-x-0 group-hover:opacity-70',
+          )}
+          aria-hidden="true"
+        />
+      </button>
+    </li>
+  )
+})
+
+export function DifferentialsSection() {
+  const [activeStep, setActiveStep] = useState(0)
+  const current = DIFFERENTIALS[activeStep] ?? DIFFERENTIALS[0]
+  const selectStep = useCallback((index: number) => setActiveStep(index), [])
+
+  return (
+    <section aria-labelledby="diferenciais-title" className="relative overflow-hidden py-24 md:py-32">
       <div aria-hidden="true" className="pointer-events-none absolute -right-48 top-1/4 -z-10 size-[34rem] rounded-full bg-nexus-cobalt/10 blur-[130px]" />
 
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
@@ -29,58 +91,15 @@ export function DifferentialsSection() {
           />
 
           <ol className="mt-9 flex flex-col gap-3" aria-label="Etapas da metodologia">
-            {DIFFERENTIALS.map((item, index) => {
-              const Icon = STEP_ICONS[index]
-              const selected = activeStep === index
-              return (
-                <li key={item.id}>
-                  <button
-                    type="button"
-                    onClick={() => setActiveStep(index)}
-                    aria-pressed={selected}
-                    className={cn(
-                      'group flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all duration-300 md:p-5',
-                      selected
-                        ? 'border-nexus-cyan/30 bg-nexus-cyan/[0.07] shadow-[0_0_32px_-18px_rgba(0,210,255,0.55)]'
-                        : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.14] hover:bg-white/[0.04]',
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        'grid size-11 shrink-0 place-items-center rounded-xl border transition-colors',
-                        selected
-                          ? 'border-nexus-cyan/30 bg-nexus-cyan/10 text-nexus-cyan'
-                          : 'border-white/[0.08] bg-white/[0.03] text-nexus-muted group-hover:text-white',
-                      )}
-                    >
-                      <Icon className="size-5" aria-hidden="true" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.18em] text-nexus-cyan/80">
-                        {item.step}
-                        <span className="h-px w-5 bg-current opacity-40" />
-                      </span>
-                      <span className="mt-1 block font-display text-lg font-semibold text-white">{item.title}</span>
-                      <span
-                        className={cn(
-                          'grid transition-[grid-template-rows,opacity] duration-300',
-                          selected ? 'mt-1 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
-                        )}
-                      >
-                        <span className="overflow-hidden text-sm leading-relaxed text-nexus-muted">{item.description}</span>
-                      </span>
-                    </span>
-                    <ArrowUpRight
-                      className={cn(
-                        'mt-1 size-4 shrink-0 transition-all',
-                        selected ? 'translate-x-0 text-nexus-cyan opacity-100' : '-translate-x-1 text-nexus-muted opacity-0 group-hover:translate-x-0 group-hover:opacity-70',
-                      )}
-                      aria-hidden="true"
-                    />
-                  </button>
-                </li>
-              )
-            })}
+            {DIFFERENTIALS.map((item, index) => (
+              <StepOption
+                key={item.id}
+                item={item}
+                index={index}
+                selected={activeStep === index}
+                onSelect={selectStep}
+              />
+            ))}
           </ol>
         </div>
 

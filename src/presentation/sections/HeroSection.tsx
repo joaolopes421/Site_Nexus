@@ -14,6 +14,7 @@ export function HeroSection() {
             width={800}
             height={800}
             className="h-full w-full object-cover opacity-40"
+            loading="eager"
             fetchPriority="high"
             decoding="async"
           />

@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react'
+import { memo, type InputHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import { cn } from '../lib/cn'
 
 const fieldClasses =
@@ -14,7 +14,7 @@ type InputFieldProps = BaseProps & InputHTMLAttributes<HTMLInputElement> & { mul
 type TextareaFieldProps = BaseProps & TextareaHTMLAttributes<HTMLTextAreaElement> & { multiline: true }
 
 /** Campo de formulário acessível com etiqueta e mensagem de erro ligadas via ARIA. */
-export function FormField(props: InputFieldProps | TextareaFieldProps) {
+export const FormField = memo(function FormField(props: InputFieldProps | TextareaFieldProps) {
   const { label, name, error, className, multiline, ...rest } = props
   const id = `field-${name}`
   const errorId = `${id}-error`
@@ -49,4 +49,4 @@ export function FormField(props: InputFieldProps | TextareaFieldProps) {
       )}
     </div>
   )
-}
+})

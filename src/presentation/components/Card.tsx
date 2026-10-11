@@ -13,7 +13,7 @@ export function Card({ interactive = false, className, children, ...rest }: Card
       className={cn(
         'glass relative overflow-hidden rounded-2xl p-6 md:p-8',
         interactive &&
-          'group transition-all duration-500 hover:-translate-y-1.5 hover:border-nexus-cyan/40 hover:bg-white/[0.05] hover:shadow-glow',
+          'group transition-[transform,background-color,border-color,opacity,box-shadow] duration-500 hover:-translate-y-1.5 hover:border-nexus-cyan/40 hover:bg-white/[0.05] hover:shadow-glow',
         className,
       )}
       {...rest}

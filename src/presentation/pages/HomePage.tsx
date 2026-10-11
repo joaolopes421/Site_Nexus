@@ -1,12 +1,15 @@
+import { lazy, memo } from 'react'
 import { Footer } from '../components/Footer'
+import { DeferredSection } from '../components/DeferredSection'
 import { Navbar } from '../components/Navbar'
-import { ContactSection } from '../sections/ContactSection'
-import { DifferentialsSection } from '../sections/DifferentialsSection'
 import { HeroSection } from '../sections/HeroSection'
-import { PillarsSection } from '../sections/PillarsSection'
-import { ServicesSection } from '../sections/ServicesSection'
 
-export function HomePage() {
+const PillarsSection = lazy(() => import('../sections/PillarsSection').then((module) => ({ default: module.PillarsSection })))
+const ServicesSection = lazy(() => import('../sections/ServicesSection').then((module) => ({ default: module.ServicesSection })))
+const DifferentialsSection = lazy(() => import('../sections/DifferentialsSection').then((module) => ({ default: module.DifferentialsSection })))
+const ContactSection = lazy(() => import('../sections/ContactSection').then((module) => ({ default: module.ContactSection })))
+
+export const HomePage = memo(function HomePage() {
   return (
     <>
       <a
@@ -18,12 +21,20 @@ export function HomePage() {
       <Navbar />
       <main id="conteudo">
         <HeroSection />
-        <PillarsSection />
-        <ServicesSection />
-        <DifferentialsSection />
-        <ContactSection />
+        <DeferredSection id="pilares" estimatedHeight={780}>
+          <PillarsSection />
+        </DeferredSection>
+        <DeferredSection id="servicos" estimatedHeight={1120}>
+          <ServicesSection />
+        </DeferredSection>
+        <DeferredSection id="diferenciais" estimatedHeight={1100}>
+          <DifferentialsSection />
+        </DeferredSection>
+        <DeferredSection id="contacto" estimatedHeight={980}>
+          <ContactSection />
+        </DeferredSection>
       </main>
       <Footer />
     </>
   )
-}
+})
