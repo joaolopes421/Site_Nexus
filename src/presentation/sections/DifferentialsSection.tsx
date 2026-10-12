@@ -1,13 +1,30 @@
 'use client'
 
-import { memo, useCallback, useState } from 'react'
+import { lazy, memo, Suspense, useCallback, useState } from 'react'
 import { ArrowUpRight, Boxes, Search, TrendingUp, Zap } from 'lucide-react'
 import { DIFFERENTIALS } from '@/data/datasource/siteContent'
-import { ParticleMorphCanvas } from '../components/ParticleMorphCanvas'
+import { useIsMobile } from '../hooks/useIsMobile'
 import { SectionHeader } from '../components/SectionHeader'
 import { cn } from '../lib/cn'
 
 const STEP_ICONS = [Search, Boxes, Zap, TrendingUp]
+const ParticleMorphCanvas = lazy(() =>
+  import('../components/ParticleMorphCanvas').then((module) => ({ default: module.ParticleMorphCanvas })),
+)
+
+const StaticMethodVisual = memo(function StaticMethodVisual({ step, label }: { step: number; label: string }) {
+  const Icon = STEP_ICONS[step] ?? Search
+
+  return (
+    <div role="img" aria-label={label} className="absolute inset-0 grid place-items-center overflow-hidden">
+      <div aria-hidden="true" className="absolute size-48 rounded-full bg-[radial-gradient(circle,rgba(0,82,212,0.26)_0%,transparent_72%)]" />
+      <div aria-hidden="true" className="absolute size-32 rounded-full border border-nexus-cyan/15 bg-nexus-cyan/[0.04]" />
+      <div className="relative grid size-24 place-items-center rounded-full border border-nexus-cyan/25 bg-[#0a1020]/80 text-nexus-cyan shadow-[0_0_48px_-16px_rgba(0,210,255,0.7)]">
+        <Icon className="size-10" aria-hidden="true" />
+      </div>
+    </div>
+  )
+})
 
 interface StepOptionProps {
   item: (typeof DIFFERENTIALS)[number]
@@ -72,6 +89,7 @@ const StepOption = memo(function StepOption({ item, index, selected, onSelect }:
 
 export function DifferentialsSection() {
   const [activeStep, setActiveStep] = useState(0)
+  const isMobile = useIsMobile()
   const current = DIFFERENTIALS[activeStep] ?? DIFFERENTIALS[0]
   const selectStep = useCallback((index: number) => setActiveStep(index), [])
 
@@ -117,10 +135,16 @@ export function DifferentialsSection() {
 
             <div className="relative h-[300px] sm:h-[360px] lg:h-[410px]">
               <div className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(255,255,255,.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.035)_1px,transparent_1px)] [background-size:36px_36px] [mask-image:radial-gradient(ellipse_at_center,black_10%,transparent_78%)]" />
-              <ParticleMorphCanvas
-                step={activeStep}
-                label={`Morfismo de partículas: ${current.step}. ${current.title}`}
-              />
+              {isMobile ? (
+                <StaticMethodVisual step={activeStep} label={`Metodologia: ${current.step}. ${current.title}`} />
+              ) : (
+                <Suspense fallback={<StaticMethodVisual step={activeStep} label={`Metodologia: ${current.step}. ${current.title}`} />}>
+                  <ParticleMorphCanvas
+                    step={activeStep}
+                    label={`Morfismo de partículas: ${current.step}. ${current.title}`}
+                  />
+                </Suspense>
+              )}
               <div className="pointer-events-none absolute bottom-5 left-5 right-5 flex items-end justify-between md:bottom-7 md:left-7 md:right-7">
                 <div>
                   <p className="font-mono text-[10px] tracking-[0.2em] text-nexus-cyan">ETAPA {current.step}</p>
