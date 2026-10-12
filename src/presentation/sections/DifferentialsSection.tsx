@@ -95,7 +95,7 @@ export function DifferentialsSection() {
 
   return (
     <section aria-labelledby="diferenciais-title" className="relative overflow-hidden py-24 md:py-32">
-      <div aria-hidden="true" className="pointer-events-none absolute -right-48 top-1/4 -z-10 size-[34rem] rounded-full bg-nexus-cobalt/10 blur-[130px]" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-48 top-1/4 -z-10 hidden size-[34rem] rounded-full bg-nexus-cobalt/10 blur-[130px] md:block" />
 
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
         <div>
@@ -122,7 +122,7 @@ export function DifferentialsSection() {
         </div>
 
         <div className="relative min-w-0">
-          <div aria-hidden="true" className="absolute inset-8 rounded-full bg-nexus-cobalt/20 blur-[90px]" />
+          <div aria-hidden="true" className="absolute inset-8 hidden rounded-full bg-nexus-cobalt/20 blur-[90px] md:block" />
           <div className="glass relative overflow-hidden rounded-[1.75rem] border-white/[0.1] bg-[#0a1020]/85 shadow-[0_30px_100px_-45px_rgba(0,82,212,0.7)]">
             <div className="flex items-center justify-between border-b border-white/[0.07] px-5 py-4 md:px-7">
               <div className="flex items-center gap-2.5" aria-hidden="true">
