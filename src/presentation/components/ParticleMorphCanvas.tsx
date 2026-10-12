@@ -176,9 +176,6 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
     let activeStep = -1
     let particleCount = 0
     let isVisible = false
-    let isMobile = window.innerWidth < MOBILE_BREAKPOINT
-    let isScrollPaused = false
-    let scrollPauseTimer: number | undefined
     let particles: Particle[] = []
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
     let schedule = () => {}
@@ -191,12 +188,6 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
 
       const settings = getParticleRenderSettings(nextWidth, window.innerWidth, window.devicePixelRatio || 1)
       const nextParticleCount = settings.particleCount
-      isMobile = settings.isMobile
-      if (!isMobile && scrollPauseTimer !== undefined) {
-        window.clearTimeout(scrollPauseTimer)
-        scrollPauseTimer = undefined
-        isScrollPaused = false
-      }
       if (nextWidth === width && nextHeight === height && settings.pixelRatio === pixelRatio && nextParticleCount === particleCount) {
         return
       }
@@ -273,29 +264,13 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
     }
 
     schedule = () => {
-      if (isVisible && !isScrollPaused && frame === 0) frame = window.requestAnimationFrame(render)
+      if (isVisible && frame === 0) frame = window.requestAnimationFrame(render)
     }
     scheduleRef.current = schedule
-
-    const pauseWhileMobileScrolls = () => {
-      if (!isMobile) return
-      isScrollPaused = true
-      if (frame !== 0) {
-        window.cancelAnimationFrame(frame)
-        frame = 0
-      }
-      if (scrollPauseTimer !== undefined) window.clearTimeout(scrollPauseTimer)
-      scrollPauseTimer = window.setTimeout(() => {
-        scrollPauseTimer = undefined
-        isScrollPaused = false
-        schedule()
-      }, 140)
-    }
 
     const resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null
     resizeObserver?.observe(canvas)
     window.addEventListener('resize', resize, { passive: true })
-    window.addEventListener('scroll', pauseWhileMobileScrolls, { passive: true })
 
     const visibilityObserver =
       typeof IntersectionObserver !== 'undefined'
@@ -326,8 +301,10 @@ export function ParticleMorphCanvas({ step, label }: { step: number; label: stri
       resizeObserver?.disconnect()
       visibilityObserver?.disconnect()
       window.removeEventListener('resize', resize)
-      window.removeEventListener('scroll', pauseWhileMobileScrolls)
-      if (scrollPauseTimer !== undefined) window.clearTimeout(scrollPauseTimer)
+      context.clearRect(0, 0, width, height)
+      particles = []
+      canvas.width = 0
+      canvas.height = 0
     }
   }, [])
 

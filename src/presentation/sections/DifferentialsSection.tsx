@@ -12,7 +12,7 @@ const ParticleMorphCanvas = lazy(() =>
   import('../components/ParticleMorphCanvas').then((module) => ({ default: module.ParticleMorphCanvas })),
 )
 
-const StaticMethodVisual = memo(function StaticMethodVisual({ step, label }: { step: number; label: string }) {
+const MobileLightFallback = memo(function MobileLightFallback({ step, label }: { step: number; label: string }) {
   const Icon = STEP_ICONS[step] ?? Search
 
   return (
@@ -135,15 +135,15 @@ export function DifferentialsSection() {
 
             <div className="relative h-[300px] sm:h-[360px] lg:h-[410px]">
               <div className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(255,255,255,.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.035)_1px,transparent_1px)] [background-size:36px_36px] [mask-image:radial-gradient(ellipse_at_center,black_10%,transparent_78%)]" />
-              {isMobile ? (
-                <StaticMethodVisual step={activeStep} label={`Metodologia: ${current.step}. ${current.title}`} />
-              ) : (
-                <Suspense fallback={<StaticMethodVisual step={activeStep} label={`Metodologia: ${current.step}. ${current.title}`} />}>
+              {!isMobile ? (
+                <Suspense fallback={<MobileLightFallback step={activeStep} label={`Metodologia: ${current.step}. ${current.title}`} />}>
                   <ParticleMorphCanvas
                     step={activeStep}
                     label={`Morfismo de partículas: ${current.step}. ${current.title}`}
                   />
                 </Suspense>
+              ) : (
+                <MobileLightFallback step={activeStep} label={`Metodologia: ${current.step}. ${current.title}`} />
               )}
               <div className="pointer-events-none absolute bottom-5 left-5 right-5 flex items-end justify-between md:bottom-7 md:left-7 md:right-7">
                 <div>
