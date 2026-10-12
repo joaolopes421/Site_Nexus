@@ -18,11 +18,97 @@
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" href="/apple-icon.png" />
-    <link rel="preload" href="/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/space-grotesk-latin-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <style id="mobile-critical-styles">
+  :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #090d16; color: #fff; font-synthesis: none; text-rendering: optimizeLegibility; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: auto; }
+  body { margin: 0; background: #090d16; color: #fff; }
+  a { color: inherit; }
+  .mobile-site { min-height: 100svh; overflow: clip; }
+  .mobile-header { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; padding: 10px 18px; background: #090d16; border-bottom: 1px solid #1b2434; }
+  .mobile-brand { display: inline-flex; align-items: center; gap: 9px; color: #fff; text-decoration: none; font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+  .mobile-brand img { display: block; width: 36px; height: 36px; object-fit: contain; border-radius: 9px; }
+  .mobile-nav { display: flex; align-items: center; gap: 12px; }
+  .mobile-nav a { color: #c1cad9; font-size: 12px; text-decoration: none; }
+  .mobile-content { width: min(100% - 36px, 540px); margin-inline: auto; }
+  .mobile-hero { padding: 66px 0 50px; }
+  .mobile-eyebrow { margin: 0 0 16px; color: #00d2ff; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+  .mobile-hero h1 { max-width: 12ch; margin: 0; font-size: clamp(38px, 11vw, 54px); line-height: 1.02; letter-spacing: -.055em; }
+  .mobile-accent { color: #00d2ff; }
+  .mobile-lead { max-width: 42ch; margin: 20px 0 0; color: #a9b2c1; font-size: 16px; line-height: 1.65; }
+  .mobile-actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 26px; }
+  .mobile-button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; padding: 12px 18px; border: 1px solid #00a9d0; border-radius: 12px; background: #00a9d0; color: #06111c; font-size: 14px; font-weight: 700; text-align: center; text-decoration: none; }
+  .mobile-button-secondary { border-color: #2b394e; background: #101827; color: #fff; }
+  .mobile-location { margin: 18px 0 0; color: #8994a5; font-size: 13px; }
+  .mobile-section { padding: 34px 0; border-top: 1px solid #1b2434; }
+  .mobile-section h2 { margin: 0; font-size: 23px; letter-spacing: -.03em; }
+  .mobile-section-intro { margin: 10px 0 0; color: #a9b2c1; font-size: 14px; line-height: 1.6; }
+  .mobile-list { display: grid; gap: 0; margin: 18px 0 0; padding: 0; list-style: none; }
+  .mobile-list li { padding: 15px 0; border-top: 1px solid #1b2434; }
+  .mobile-list strong { display: block; font-size: 15px; }
+  .mobile-list p { margin: 6px 0 0; color: #a9b2c1; font-size: 13px; line-height: 1.55; }
+  .mobile-contact { display: grid; gap: 12px; margin-top: 20px; }
+  .mobile-contact a { color: #c9f5ff; font-size: 15px; text-decoration: none; }
+  .mobile-footer { padding: 26px 0 32px; border-top: 1px solid #1b2434; color: #8994a5; font-size: 12px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+
+  @media (min-width: 768px) { .mobile-site { display: none; } }
+</style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+  <div class="mobile-site">
+    <header class="mobile-header">
+      <a class="mobile-brand" href="#inicio" aria-label="Nexus System, início">
+        <img src="/nexus-logo.webp" alt="" width="36" height="36" fetchpriority="high" decoding="async">
+        <span>Nexus System</span>
+      </a>
+      <nav class="mobile-nav" aria-label="Navegação principal">
+        <a href="#servicos">Serviços</a>
+        <a href="#contato">Contato</a>
+      </nav>
+    </header>
+    <main>
+      <section class="mobile-content mobile-hero" id="inicio" aria-labelledby="mobile-title">
+        <p class="mobile-eyebrow">Engenharia de software & infraestrutura</p>
+        <h1 id="mobile-title">Gestão Inteligente.<br><span class="mobile-accent">Resultados Reais.</span></h1>
+        <p class="mobile-lead">Sistemas ERP, plataformas SaaS e infraestrutura sob medida para transformar processos complexos em crescimento previsível.</p>
+        <div class="mobile-actions">
+          <a class="mobile-button" href="https://wa.me/5519994193081">Falar com um especialista</a>
+          <a class="mobile-button mobile-button-secondary" href="#servicos">Conhecer soluções</a>
+        </div>
+        <p class="mobile-location">Limeira - SP, Brasil</p>
+      </section>
+      <section class="mobile-content mobile-section" id="servicos" aria-labelledby="mobile-services-title">
+        <h2 id="mobile-services-title">Soluções para a sua operação</h2>
+        <p class="mobile-section-intro">Tecnologia desenhada para acompanhar as necessidades do seu negócio.</p>
+        <ul class="mobile-list">
+          <li><strong>Sistemas ERP & SaaS</strong><p>Plataformas sob medida para centralizar e simplificar a operação.</p></li>
+          <li><strong>Desenvolvimento web</strong><p>Sites e aplicações rápidos, responsivos e preparados para crescer.</p></li>
+          <li><strong>Automação e infraestrutura</strong><p>Integrações, cloud e redes com foco em eficiência e segurança.</p></li>
+        </ul>
+      </section>
+      <section class="mobile-content mobile-section" aria-labelledby="mobile-process-title">
+        <h2 id="mobile-process-title">Um processo claro</h2>
+        <ol class="mobile-list">
+          <li><strong>01. Diagnóstico</strong><p>Entendemos processos, desafios e objetivos.</p></li>
+          <li><strong>02. Arquitetura</strong><p>Planeamos uma solução segura e escalável.</p></li>
+          <li><strong>03. Entrega e evolução</strong><p>Construímos em etapas e melhoramos continuamente.</p></li>
+        </ol>
+      </section>
+      <section class="mobile-content mobile-section" id="contato" aria-labelledby="mobile-contact-title">
+        <h2 id="mobile-contact-title">Vamos conversar?</h2>
+        <p class="mobile-section-intro">Fale com a equipa Nexus System sobre o próximo projeto da sua empresa.</p>
+        <div class="mobile-contact">
+          <a href="mailto:nexussystemadmin@gmail.com">nexussystemadmin@gmail.com</a>
+          <a href="tel:+5519994193081">(19) 99419-3081</a>
+          <a href="https://wa.me/5519994193081">Conversar pelo WhatsApp</a>
+        </div>
+      </section>
+    </main>
+    <footer class="mobile-content mobile-footer">© Nexus System · Limeira - SP, Brasil</footer>
+  </div>
+</div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
