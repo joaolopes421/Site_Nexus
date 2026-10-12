@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 
 /** Indica se a página já foi deslocada além de `threshold` píxeis. */
-export function useScrolled(threshold = 16): boolean {
+export function useScrolled(threshold = 16, disabled = false): boolean {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
+    if (disabled) return
+
     let frame = 0
     const update = () => {
       frame = 0
@@ -21,16 +23,17 @@ export function useScrolled(threshold = 16): boolean {
       window.removeEventListener('scroll', onScroll)
       if (frame !== 0) window.cancelAnimationFrame(frame)
     }
-  }, [threshold])
+  }, [threshold, disabled])
 
   return scrolled
 }
 
 /** Devolve o id da secção atualmente visível (para destacar o link ativo na navbar). */
-export function useActiveSection(sectionIds: readonly string[]): string {
+export function useActiveSection(sectionIds: readonly string[], disabled = false): string {
   const [active, setActive] = useState(sectionIds[0] ?? '')
 
   useEffect(() => {
+    if (disabled) return
     if (typeof IntersectionObserver === 'undefined') return
 
     const elements = sectionIds
@@ -48,7 +51,7 @@ export function useActiveSection(sectionIds: readonly string[]): string {
 
     elements.forEach((el) => observer.observe(el))
     return () => observer.disconnect()
-  }, [sectionIds])
+  }, [sectionIds, disabled])
 
   return active
 }

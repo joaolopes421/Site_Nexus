@@ -11,7 +11,7 @@ export function Card({ interactive = false, className, children, ...rest }: Card
   return (
     <div
       className={cn(
-        'glass relative overflow-hidden rounded-2xl p-6 md:p-8',
+        'glass mobile-no-shadow relative overflow-hidden rounded-2xl p-6 md:p-8',
         interactive &&
           'group transition-[transform,background-color,border-color,opacity,box-shadow] duration-500 hover:-translate-y-1.5 hover:border-nexus-cyan/40 hover:bg-white/[0.05] hover:shadow-glow',
         className,
@@ -21,7 +21,7 @@ export function Card({ interactive = false, className, children, ...rest }: Card
       {interactive && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -right-24 size-48 rounded-full bg-nexus-cyan/20 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
+          className="mobile-no-blur pointer-events-none absolute -top-24 -right-24 size-48 rounded-full bg-nexus-cyan/20 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
         />
       )}
       <div className="relative">{children}</div>

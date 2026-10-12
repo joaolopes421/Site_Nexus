@@ -1,5 +1,4 @@
 import { lazy, memo } from 'react'
-import { Footer } from '../components/Footer'
 import { DeferredSection } from '../components/DeferredSection'
 import { Navbar } from '../components/Navbar'
 import { HeroSection } from '../sections/HeroSection'
@@ -8,6 +7,7 @@ const PillarsSection = lazy(() => import('../sections/PillarsSection').then((mod
 const ServicesSection = lazy(() => import('../sections/ServicesSection').then((module) => ({ default: module.ServicesSection })))
 const DifferentialsSection = lazy(() => import('../sections/DifferentialsSection').then((module) => ({ default: module.DifferentialsSection })))
 const ContactSection = lazy(() => import('../sections/ContactSection').then((module) => ({ default: module.ContactSection })))
+const Footer = lazy(() => import('../components/Footer').then((module) => ({ default: module.Footer })))
 
 export const HomePage = memo(function HomePage() {
   return (
@@ -34,7 +34,9 @@ export const HomePage = memo(function HomePage() {
           <ContactSection />
         </DeferredSection>
       </main>
-      <Footer />
+      <DeferredSection id="rodape" estimatedHeight={420}>
+        <Footer />
+      </DeferredSection>
     </>
   )
 })

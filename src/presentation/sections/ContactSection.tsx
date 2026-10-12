@@ -25,7 +25,7 @@ export function ContactSection() {
 
   return (
     <section aria-labelledby="contacto-title" className="relative py-24 md:py-32">
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 mx-auto h-[28rem] max-w-5xl rounded-full bg-nexus-cobalt/20 blur-[140px]" />
+      <div aria-hidden="true" className="mobile-no-blur absolute inset-x-0 bottom-0 -z-10 mx-auto h-[28rem] max-w-5xl rounded-full bg-nexus-cobalt/20 blur-[140px]" />
 
       <div className="mx-auto grid max-w-7xl gap-12 px-5 md:px-8 lg:grid-cols-5 lg:gap-16">
         <div className="lg:col-span-2">

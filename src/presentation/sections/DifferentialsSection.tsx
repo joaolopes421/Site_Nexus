@@ -19,7 +19,7 @@ const StaticMethodVisual = memo(function StaticMethodVisual({ step, label }: { s
     <div role="img" aria-label={label} className="absolute inset-0 grid place-items-center overflow-hidden">
       <div aria-hidden="true" className="absolute size-48 rounded-full bg-[radial-gradient(circle,rgba(0,82,212,0.26)_0%,transparent_72%)]" />
       <div aria-hidden="true" className="absolute size-32 rounded-full border border-nexus-cyan/15 bg-nexus-cyan/[0.04]" />
-      <div className="relative grid size-24 place-items-center rounded-full border border-nexus-cyan/25 bg-[#0a1020]/80 text-nexus-cyan shadow-[0_0_48px_-16px_rgba(0,210,255,0.7)]">
+      <div className="mobile-no-shadow relative grid size-24 place-items-center rounded-full border border-nexus-cyan/25 bg-[#0a1020]/80 text-nexus-cyan shadow-[0_0_48px_-16px_rgba(0,210,255,0.7)]">
         <Icon className="size-10" aria-hidden="true" />
       </div>
     </div>
@@ -44,7 +44,7 @@ const StepOption = memo(function StepOption({ item, index, selected, onSelect }:
         onClick={handleClick}
         aria-pressed={selected}
         className={cn(
-          'group flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-[transform,background-color,border-color] duration-300 md:p-5',
+          'mobile-no-shadow group flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-[transform,background-color,border-color] duration-300 md:p-5',
           selected
             ? 'border-nexus-cyan/30 bg-nexus-cyan/[0.07] shadow-[0_0_32px_-18px_rgba(0,210,255,0.55)]'
             : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.14] hover:bg-white/[0.04]',
@@ -123,7 +123,7 @@ export function DifferentialsSection() {
 
         <div className="relative min-w-0">
           <div aria-hidden="true" className="absolute inset-8 hidden rounded-full bg-nexus-cobalt/20 blur-[90px] md:block" />
-          <div className="glass relative overflow-hidden rounded-[1.75rem] border-white/[0.1] bg-[#0a1020]/85 shadow-[0_30px_100px_-45px_rgba(0,82,212,0.7)]">
+          <div className="glass mobile-no-shadow relative overflow-hidden rounded-[1.75rem] border-white/[0.1] bg-[#0a1020]/85 shadow-[0_30px_100px_-45px_rgba(0,82,212,0.7)]">
             <div className="flex items-center justify-between border-b border-white/[0.07] px-5 py-4 md:px-7">
               <div className="flex items-center gap-2.5" aria-hidden="true">
                 <span className="size-2 rounded-full bg-nexus-cyan shadow-[0_0_10px_#00d2ff]" />

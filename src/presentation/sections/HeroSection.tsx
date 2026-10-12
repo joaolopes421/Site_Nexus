@@ -21,7 +21,7 @@ export function HeroSection() {
         </picture>
         <div className="absolute inset-0 bg-gradient-to-b from-nexus-bg/40 via-nexus-bg/70 to-nexus-bg" />
         <div className="bg-grid absolute inset-0" />
-        <div className="absolute top-1/4 left-1/2 size-[28rem] -translate-x-1/2 rounded-full bg-nexus-cobalt/25 blur-[72px] md:size-[36rem] md:animate-pulse-glow md:blur-[120px]" />
+        <div className="mobile-no-blur absolute top-1/4 left-1/2 size-[28rem] -translate-x-1/2 rounded-full bg-nexus-cobalt/25 blur-[72px] md:size-[36rem] md:animate-pulse-glow md:blur-[120px]" />
       </div>
 
       <div className="mx-auto flex max-w-5xl flex-col items-center px-5 text-center md:px-8">
