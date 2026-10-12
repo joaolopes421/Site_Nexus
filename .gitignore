@@ -22,3 +22,5 @@ Thumbs.db
 
 # Opcional: configuração local da Vercel
 .vercel/
+.vercel
+.env*
