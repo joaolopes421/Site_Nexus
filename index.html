@@ -85,36 +85,10 @@
   .m-coin-hint { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; padding: 5px 12px; border: 1px solid rgba(255,255,255,.1); border-radius: 999px; background: rgba(255,255,255,.03); color: #94a3b8; font-size: 12px; }
   .m-coin-hint .i { width: 14px; height: 14px; color: #22d3ee; }
 
-  /* Pré-visualização do painel (mesmo visual do desktop) */
-  .m-preview { margin-top: 32px; padding: 6px; border: 1px solid rgba(255,255,255,.1); border-radius: 20px; background: rgba(255,255,255,.03); box-shadow: 0 30px 60px -30px rgba(0,0,0,.8); text-align: left; }
-  .m-preview-in { position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,.06); border-radius: 15px; background: #0f1524; }
-  .m-preview-in::before, .m-card::before, .m-band::before, .m-form::before { content: ""; position: absolute; inset: 0 24px auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); }
-  .m-preview-in::before, .m-band::before { background: linear-gradient(90deg, transparent, rgba(103,232,249,.5), transparent); }
-  .m-window { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.06); }
-  .m-dots { display: flex; gap: 5px; }
-  .m-dots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.1); }
-  .m-url { display: inline-flex; align-items: center; gap: 5px; margin-inline: auto; padding: 3px 10px; border: 1px solid rgba(255,255,255,.06); border-radius: 6px; background: rgba(255,255,255,.03); color: #64748b; font-size: 10px; }
-  .m-url .i { width: 11px; height: 11px; }
-  .m-preview-body { padding: 14px; }
-  .m-preview-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #94a3b8; font-size: 11px; }
-  .m-preview-top strong { display: block; margin-top: 2px; color: #fff; font-size: 14px; font-weight: 650; }
-  .m-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border: 1px solid rgba(52,211,153,.2); border-radius: 999px; background: rgba(52,211,153,.06); color: #6ee7b7; font-size: 11px; }
-  .m-status::before, .m-on::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #34d399; }
-  .m-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-  .m-kpi { padding: 10px 11px; border: 1px solid rgba(255,255,255,.06); border-radius: 11px; background: rgba(255,255,255,.02); color: #94a3b8; font-size: 11px; }
-  .m-kpi strong { display: block; margin-top: 4px; color: #fff; font-size: 16px; font-weight: 650; letter-spacing: -.02em; }
-  .m-kpi span { color: #34d399; }
-  .m-chart { margin-top: 8px; padding: 11px; border: 1px solid rgba(255,255,255,.06); border-radius: 11px; background: rgba(255,255,255,.02); }
-  .m-chart-head { display: flex; justify-content: space-between; color: #cbd5e1; font-size: 11.5px; font-weight: 500; }
-  .m-chart-head span { color: #64748b; font-weight: 400; }
-  .m-bars { display: flex; align-items: flex-end; gap: 5px; height: 64px; margin-top: 10px; }
-  .m-bars i { flex: 1; border-radius: 3px 3px 0 0; background: rgba(255,255,255,.08); }
-  .m-bars i:last-child { background: linear-gradient(to top, rgba(34,211,238,.7), #818cf8); }
-  .m-activity { margin-top: 8px; padding: 11px; border: 1px solid rgba(255,255,255,.06); border-radius: 11px; background: rgba(255,255,255,.02); }
-  .m-activity p { color: #cbd5e1; font-size: 11.5px; font-weight: 500; }
-  .m-activity li { display: flex; align-items: center; gap: 8px; margin-top: 9px; color: #cbd5e1; font-size: 11.5px; }
-  .m-activity li::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--dot); }
-  .m-activity li span { margin-left: auto; color: #64748b; }
+  /* Filete de luz no topo das superfícies */
+  .m-card::before, .m-band::before, .m-form::before { content: ""; position: absolute; inset: 0 24px auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); }
+  .m-band::before { background: linear-gradient(90deg, transparent, rgba(103,232,249,.5), transparent); }
+  .m-on::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #34d399; }
 
   /* Cabeçalho de secção (mesmo padrão bicolor do desktop) */
   .m-section { padding-top: 64px; }
@@ -320,40 +294,6 @@
             <img class="nx-coin-fallback" src="/nexus-coin.webp" alt="" width="512" height="512" decoding="async">
           </div>
           <p class="m-coin-hint"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m18 8 4 4-4 4"/><path d="M2 12h20"/><path d="m6 8-4 4 4 4"/></svg>Arraste para girar · toque para virar</p>
-
-          <div class="m-preview" aria-hidden="true">
-            <div class="m-preview-in">
-              <div class="m-window">
-                <span class="m-dots"><i></i><i></i><i></i></span>
-                <span class="m-url"><svg class="i" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Painel operacional</span>
-                <span style="width:29px"></span>
-              </div>
-              <div class="m-preview-body">
-                <div class="m-preview-top">
-                  <div>Operação · Hoje<strong>Visão geral</strong></div>
-                  <span class="m-status">Sincronizado</span>
-                </div>
-                <div class="m-kpis">
-                  <div class="m-kpi">Faturamento do mês<strong>R$ 284,3 mil</strong><span>+12,4%</span></div>
-                  <div class="m-kpi">Tarefas automatizadas<strong>37</strong><span>+5</span></div>
-                </div>
-                <div class="m-chart">
-                  <div class="m-chart-head">Receita por mês<span>Últimos 12 meses</span></div>
-                  <div class="m-bars">
-                    <i style="height:38%"></i><i style="height:46%"></i><i style="height:41%"></i><i style="height:55%"></i><i style="height:49%"></i><i style="height:61%"></i><i style="height:57%"></i><i style="height:66%"></i><i style="height:60%"></i><i style="height:72%"></i><i style="height:68%"></i><i style="height:88%"></i>
-                  </div>
-                </div>
-                <div class="m-activity">
-                  <p>Atividade</p>
-                  <ul>
-                    <li style="--dot:#22d3ee">Nota fiscal #2041 emitida<span>agora</span></li>
-                    <li style="--dot:#34d399">Estoque sincronizado com a loja<span>2 min</span></li>
-                    <li style="--dot:#818cf8">Novo acesso aprovado<span>8 min</span></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -451,8 +391,8 @@
             <li class="m-card">
               <span class="m-icon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg></span>
               <h3>Redes e Infraestrutura</h3>
-              <p>Servidores, cloud computing e segurança de redes com monitoramento contínuo e suporte dedicado.</p>
-              <ul class="m-chips"><li>Cloud &amp; servidores</li><li>Firewall e VPN</li><li>Monitoramento 24/7</li></ul>
+              <p>Servidores, cloud computing e segurança de redes estruturados para a sua operação.</p>
+              <ul class="m-chips"><li>Cloud &amp; servidores</li><li>Firewall e VPN</li></ul>
             </li>
           </ul>
         </div>

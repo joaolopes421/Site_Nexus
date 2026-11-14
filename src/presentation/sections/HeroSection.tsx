@@ -16,7 +16,7 @@ export function HeroSection() {
         <div className="absolute top-0 left-1/2 h-px w-[min(44rem,90%)] -translate-x-1/2 bg-linear-to-r from-transparent via-cyan-300/60 to-transparent" />
       </div>
 
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 md:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-8">
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 md:px-8 md:pb-0 lg:grid-cols-[1.15fr_0.85fr] lg:gap-8">
         <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
           <a
             href="#servicos"
@@ -69,7 +69,8 @@ export function HeroSection() {
         <NexusCoin className="lg:justify-self-end lg:pr-4" />
       </div>
 
-      <div className="mt-16 px-5 pb-8 md:mt-20 md:px-8 md:pb-12">
+      {/* Em ecrãs de telemóvel o painel fica de fora: sem contexto, só empurrava o conteúdo para baixo. */}
+      <div className="mt-16 hidden px-5 pb-8 md:mt-20 md:block md:px-8 md:pb-12">
         <HeroPreview />
       </div>
     </section>

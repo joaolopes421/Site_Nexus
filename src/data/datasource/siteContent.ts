@@ -101,9 +101,9 @@ export const SERVICES: Service[] = [
   {
     id: 'redes',
     title: 'Redes e Infraestrutura',
-    description: 'Servidores, cloud computing e segurança de redes com monitoramento contínuo e suporte dedicado.',
+    description: 'Servidores, cloud computing e segurança de redes estruturados para a sua operação.',
     icon: Network,
-    highlights: ['Cloud & servidores', 'Firewall e VPN', 'Monitoramento 24/7'],
+    highlights: ['Cloud & servidores', 'Firewall e VPN'],
   },
 ]
 
