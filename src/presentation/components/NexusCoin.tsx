@@ -1,4 +1,3 @@
-import { MoveHorizontal } from 'lucide-react'
 import { memo, useLayoutEffect, useRef } from 'react'
 import { mountNexusCoin } from '../coin/nexusCoin'
 import { cn } from '../lib/cn'
@@ -21,8 +20,10 @@ export const NexusCoin = memo(function NexusCoin({ className }: { className?: st
     }
   }, [])
 
+  // Sem legenda visível de propósito: a interação é uma surpresa para quem toca na moeda.
+  // O aria-label mantém a instrução para quem usa leitor de ecrã.
   return (
-    <figure className={cn('flex flex-col items-center', className)}>
+    <div className={cn('flex flex-col items-center', className)}>
       <div
         ref={stageRef}
         role="button"
@@ -30,10 +31,6 @@ export const NexusCoin = memo(function NexusCoin({ className }: { className?: st
         aria-label="Moeda Nexus interativa. Arraste para girar ou pressione Enter para virar."
         className="nx-coin-stage [--coin-size:240px] md:[--coin-size:270px] lg:[--coin-size:300px] xl:[--coin-size:320px]"
       />
-      <figcaption className="mt-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-slate-400">
-        <MoveHorizontal className="size-3.5 text-nexus-cyan" aria-hidden="true" />
-        Arraste para girar · clique para virar
-      </figcaption>
-    </figure>
+    </div>
   )
 })

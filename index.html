@@ -82,8 +82,6 @@
   .mobile-site .nx-coin-stage { --coin-size: min(60vw, 236px); --coin-depth: calc(var(--coin-size) * .08); position: relative; display: grid; place-items: center; width: calc(var(--coin-size) + 48px); height: calc(var(--coin-size) + 72px); margin: 30px auto 0; border-radius: 28px; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
   .mobile-site .nx-coin-stage::before { content: ""; position: absolute; inset: -8%; border-radius: 50%; background: radial-gradient(closest-side, rgba(34,211,238,.2), rgba(129,140,248,.08) 55%, transparent 76%); pointer-events: none; }
   .nx-coin-fallback { position: relative; display: block; width: var(--coin-size); height: var(--coin-size); margin-top: -24px; border-radius: 50%; box-shadow: 0 0 0 calc(var(--coin-size) * .045) #1e3a8a; }
-  .m-coin-hint { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; padding: 5px 12px; border: 1px solid rgba(255,255,255,.1); border-radius: 999px; background: rgba(255,255,255,.03); color: #94a3b8; font-size: 12px; }
-  .m-coin-hint .i { width: 14px; height: 14px; color: #22d3ee; }
 
   /* Filete de luz no topo das superfícies */
   .m-card::before, .m-band::before, .m-form::before { content: ""; position: absolute; inset: 0 24px auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); }
@@ -293,7 +291,6 @@
           <div class="nx-coin-stage" data-nexus-coin>
             <img class="nx-coin-fallback" src="/nexus-coin.webp" alt="" width="512" height="512" decoding="async">
           </div>
-          <p class="m-coin-hint"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m18 8 4 4-4 4"/><path d="M2 12h20"/><path d="m6 8-4 4 4 4"/></svg>Arraste para girar · toque para virar</p>
         </div>
       </section>
 
