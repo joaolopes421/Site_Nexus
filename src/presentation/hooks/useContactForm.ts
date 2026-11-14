@@ -68,7 +68,7 @@ export function useContactForm(repository: ContactRepository) {
     if (result.ok) {
       statusRef.current = 'success'
       setStatus('success')
-      setFeedback('Mensagem enviada com sucesso! A nossa equipa responderá em até 24 horas úteis.')
+      setFeedback('Mensagem enviada com sucesso! Nossa equipe responderá em até 24 horas úteis.')
       valuesRef.current = EMPTY_CONTACT_MESSAGE
       setValues(EMPTY_CONTACT_MESSAGE)
       touched.current = {}

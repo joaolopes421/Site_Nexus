@@ -17,24 +17,24 @@ export function validateContactField(field: ContactField, rawValue: string): str
 
   switch (field) {
     case 'name':
-      if (!value) return 'Indique o seu nome.'
+      if (!value) return 'Informe seu nome.'
       if (value.length < 2) return 'O nome deve ter pelo menos 2 caracteres.'
       if (value.length > CONTACT_LIMITS.nameMax) return `Máximo de ${CONTACT_LIMITS.nameMax} caracteres.`
       return undefined
     case 'company':
-      if (!value) return 'Indique o nome da empresa.'
+      if (!value) return 'Informe o nome da empresa.'
       if (value.length > CONTACT_LIMITS.companyMax) return `Máximo de ${CONTACT_LIMITS.companyMax} caracteres.`
       return undefined
     case 'email':
-      if (!value) return 'Indique o seu email.'
-      if (value.length > CONTACT_LIMITS.emailMax || !EMAIL_PATTERN.test(value)) return 'Introduza um email válido.'
+      if (!value) return 'Informe seu e-mail.'
+      if (value.length > CONTACT_LIMITS.emailMax || !EMAIL_PATTERN.test(value)) return 'Informe um e-mail válido.'
       return undefined
     case 'phone':
-      if (!value) return 'Indique um telefone para contacto.'
-      if (!PHONE_PATTERN.test(value)) return 'Introduza um telefone válido (mín. 9 dígitos).'
+      if (!value) return 'Informe um telefone para contato.'
+      if (!PHONE_PATTERN.test(value)) return 'Informe um telefone válido (mín. 9 dígitos).'
       return undefined
     case 'message':
-      if (!value) return 'Escreva a sua mensagem.'
+      if (!value) return 'Escreva sua mensagem.'
       if (value.length < CONTACT_LIMITS.messageMin)
         return `A mensagem deve ter pelo menos ${CONTACT_LIMITS.messageMin} caracteres.`
       if (value.length > CONTACT_LIMITS.messageMax) return `Máximo de ${CONTACT_LIMITS.messageMax} caracteres.`

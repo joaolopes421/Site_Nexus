@@ -41,4 +41,19 @@ if (window.innerWidth >= 768) {
         }),
       )
     })
+} else {
+  // Mobile: o HTML já foi pintado sem JavaScript. As interações (moeda, menu, formulário)
+  // carregam depois do evento load, em tempo ocioso, para não competir com a primeira pintura.
+  const enhance = () => {
+    void import('./presentation/mobile/enhanceMobileShell')
+      .then(({ enhanceMobileShell }) => enhanceMobileShell(document))
+      .catch((error: unknown) => console.error('Falha ao carregar as interações mobile.', error))
+  }
+  const scheduleEnhance =
+    typeof window.requestIdleCallback === 'function'
+      ? () => window.requestIdleCallback(enhance, { timeout: 2000 })
+      : () => setTimeout(enhance, 200)
+
+  if (document.readyState === 'complete') scheduleEnhance()
+  else window.addEventListener('load', scheduleEnhance, { once: true })
 }

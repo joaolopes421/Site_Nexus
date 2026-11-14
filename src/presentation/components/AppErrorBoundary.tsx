@@ -30,7 +30,7 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
             placeContent: 'center',
             gap: '1rem',
             padding: '2rem',
-            background: '#090d16',
+            background: '#0b0f19',
             color: '#fff',
             fontFamily: 'system-ui, sans-serif',
             textAlign: 'center',

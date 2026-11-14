@@ -22,7 +22,7 @@ export function toFormspreePayload(message: ContactMessage): FormspreePayload {
     email: message.email.trim(),
     telefone: message.phone.trim(),
     mensagem: message.message.trim(),
-    _subject: `Novo contacto via site: ${message.name.trim()} (${message.company.trim()})`,
+    _subject: `Novo contato via site: ${message.name.trim()} (${message.company.trim()})`,
     _replyto: message.email.trim(),
   }
 }

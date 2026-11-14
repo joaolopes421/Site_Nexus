@@ -3,7 +3,7 @@ import type { ContactRepository } from '@/domain/repositories/ContactRepository'
 import { hasErrors, validateContactForm } from './validateContactForm'
 
 /**
- * Caso de uso: validar e enviar um contacto.
+ * Caso de uso: validar e enviar um contato.
  * Recebe o repositório por injeção de dependência, o que permite
  * trocar o provedor ou usar um mock em testes.
  */
@@ -12,7 +12,7 @@ export async function submitContactForm(
   data: ContactMessage,
 ): Promise<ContactSubmissionResult> {
   if (hasErrors(validateContactForm(data))) {
-    return { ok: false, error: 'Verifique os campos assinalados.' }
+    return { ok: false, error: 'Verifique os campos destacados.' }
   }
   return repository.send(data)
 }

@@ -8,7 +8,7 @@ import {
   Sparkles,
   Workflow,
 } from 'lucide-react'
-import type { Differential, Pillar, Service } from '@/domain/entities/Service'
+import type { ContactStep, Differential, Pillar, Service } from '@/domain/entities/Service'
 
 /**
  * Conteúdo institucional estático. Centralizado aqui para que, no futuro,
@@ -24,33 +24,47 @@ export const COMPANY = {
   location: 'Limeira - SP, Brasil',
 } as const
 
+/** Link de WhatsApp com mensagem inicial pré-preenchida, compartilhado por todos os CTAs. */
+export const WHATSAPP_URL = `https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent(
+  'Olá! Gostaria de saber mais sobre as soluções da Nexus System.',
+)}`
+
 export const NAV_LINKS = [
   { label: 'Início', href: '#inicio' },
   { label: 'Pilares', href: '#pilares' },
   { label: 'Serviços', href: '#servicos' },
   { label: 'Diferenciais', href: '#diferenciais' },
-  { label: 'Contacto', href: '#contacto' },
+  { label: 'Contato', href: '#contato' },
 ] as const
 
 export const PILLARS: Pillar[] = [
   {
     id: 'personalizacao',
     title: 'Personalização',
-    description: 'Cada linha de código é desenhada à medida da sua operação, sem soluções genéricas que travam o crescimento.',
+    description: 'Cada linha de código é pensada sob medida para a sua operação, sem soluções genéricas que travam o crescimento.',
     icon: Sparkles,
+    highlights: ['Finanças', 'Estoque', 'Vendas', 'Equipes', 'Relatórios', 'Integrações'],
   },
   {
     id: 'seguranca',
     title: 'Segurança',
-    description: 'Arquiteturas protegidas por padrão: encriptação, controlo de acessos e conformidade com o RGPD.',
+    description: 'Arquiteturas protegidas por padrão: criptografia, controle de acesso e conformidade com a LGPD.',
     icon: ShieldCheck,
+    highlights: ['Criptografia de dados', 'Controle de acesso por perfil', 'Conformidade com a LGPD'],
   },
   {
     id: 'inovacao',
     title: 'Inovação',
     description: 'Tecnologias de ponta, automação e inteligência aplicada para manter a sua empresa à frente.',
     icon: Lightbulb,
+    highlights: ['Novo pedido recebido', 'Sincronização via API', 'Nota fiscal emitida automaticamente'],
   },
+]
+
+export const CONTACT_STEPS: ContactStep[] = [
+  { id: 'resposta', title: 'Resposta em até 24h úteis', description: 'Um especialista analisa a sua solicitação e entra em contato.' },
+  { id: 'diagnostico', title: 'Conversa de diagnóstico', description: 'Mapeamos processos, gargalos e objetivos do negócio.' },
+  { id: 'proposta', title: 'Proposta sem compromisso', description: 'Você recebe um plano com escopo, prazos e próximos passos.' },
 ]
 
 export const SERVICES: Service[] = [
@@ -58,9 +72,9 @@ export const SERVICES: Service[] = [
     id: 'erp-saas',
     title: 'Sistemas ERP & SaaS Personalizados',
     description:
-      'Plataformas sob medida que centralizam finanças, stock, vendas e equipas num único ecossistema escalável.',
+      'Plataformas sob medida que centralizam finanças, estoque, vendas e equipes em um único ecossistema escalável.',
     icon: Blocks,
-    highlights: ['Módulos à medida', 'Multi-utilizador', 'Dashboards em tempo real'],
+    highlights: ['Módulos sob medida', 'Multiusuário', 'Dashboards em tempo real'],
     featured: true,
   },
   {
@@ -87,9 +101,9 @@ export const SERVICES: Service[] = [
   {
     id: 'redes',
     title: 'Redes e Infraestrutura',
-    description: 'Servidores, cloud computing e segurança de redes com monitorização contínua e suporte dedicado.',
+    description: 'Servidores, cloud computing e segurança de redes com monitoramento contínuo e suporte dedicado.',
     icon: Network,
-    highlights: ['Cloud & servidores', 'Firewall e VPN', 'Monitorização 24/7'],
+    highlights: ['Cloud & servidores', 'Firewall e VPN', 'Monitoramento 24/7'],
   },
 ]
 
@@ -104,7 +118,7 @@ export const DIFFERENTIALS: Differential[] = [
     id: 'arquitetura',
     step: '02',
     title: 'Arquitetura',
-    description: 'Desenhamos uma solução escalável, segura e preparada para evoluir com a sua empresa.',
+    description: 'Projetamos uma solução escalável, segura e preparada para evoluir com a sua empresa.',
   },
   {
     id: 'sprints',

@@ -4,20 +4,26 @@ import { cn } from '../lib/cn'
 type Variant = 'primary' | 'secondary' | 'ghost'
 type Size = 'sm' | 'md' | 'lg'
 
-const base =
-  'group mobile-no-shadow inline-flex items-center justify-center gap-2 rounded-full font-medium transition-[transform,opacity,background-color,border-color,color,box-shadow] duration-300 disabled:pointer-events-none disabled:opacity-60'
+const base = cn(
+  'group relative inline-flex shrink-0 items-center justify-center gap-2 rounded-xl font-medium whitespace-nowrap select-none',
+  'transition-[transform,background-color,border-color,color,box-shadow,opacity,filter] duration-300 ease-out',
+  'active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nexus-cyan/70 focus-visible:ring-offset-2 focus-visible:ring-offset-nexus-bg',
+  'disabled:pointer-events-none disabled:opacity-60 aria-disabled:pointer-events-none aria-disabled:opacity-60',
+)
 
 const variants: Record<Variant, string> = {
+  // Único lugar onde o gradiente de marca preenche uma superfície. Texto escuro garante contraste AA em toda a rampa.
   primary:
-    'bg-gradient-to-r from-nexus-cyan to-nexus-cobalt text-white shadow-glow hover:shadow-glow-lg hover:-translate-y-0.5',
-  secondary: 'glass text-white hover:border-nexus-cyan/50 hover:bg-white/[0.06] hover:-translate-y-0.5',
-  ghost: 'text-nexus-muted hover:text-white',
+    'mobile-no-shadow bg-linear-to-r from-cyan-300 via-nexus-cyan to-nexus-indigo font-semibold text-slate-950 shadow-cta hover:shadow-cta-hover hover:brightness-110',
+  secondary:
+    'border border-white/10 bg-white/[0.04] text-white hover:border-white/20 hover:bg-white/[0.08]',
+  ghost: 'text-slate-400 hover:bg-white/[0.04] hover:text-white',
 }
 
 const sizes: Record<Size, string> = {
-  sm: 'h-9 px-4 text-sm',
-  md: 'h-11 px-6 text-sm',
-  lg: 'h-13 px-8 text-base',
+  sm: 'h-9 px-3.5 text-sm',
+  md: 'h-11 px-5 text-sm',
+  lg: 'h-12 px-6 text-[0.9375rem]',
 }
 
 interface CommonProps {

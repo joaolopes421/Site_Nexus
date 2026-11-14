@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Simulação Mobile · Nexus System</title>
+    <!--
+      Ferramenta só de desenvolvimento: abre http://localhost:<porta>/preview-mobile.html com o servidor Vite a correr.
+      Não entra no build (o Vite só usa index.html como entrada), por isso nunca é publicada.
+      O iframe tem a largura real do aparelho, logo o site carrega o shell mobile exatamente como num telemóvel.
+      Para medir desempenho com CPU e rede limitadas (Samsung de entrada), usa `npm run perf:mobile`.
+    -->
+    <style>
+      :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+      * { box-sizing: border-box; }
+      body { min-height: 100vh; margin: 0; background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(56,189,248,.12), transparent 70%), #070a12; color: #e2e8f0; }
+      .toolbar { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.06); background: rgba(7,10,18,.92); }
+      .group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+      .group + .group { padding-left: 10px; border-left: 1px solid rgba(255,255,255,.08); }
+      .label { margin-right: 2px; color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+      .toolbar button, .toolbar a { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 11px; border: 1px solid rgba(255,255,255,.1); border-radius: 10px; background: rgba(255,255,255,.04); color: #cbd5e1; font-family: inherit; font-size: 12.5px; font-weight: 500; line-height: 1; text-decoration: none; cursor: pointer; transition: background-color .2s, border-color .2s, color .2s; }
+      .toolbar button:hover, .toolbar a:hover { border-color: rgba(255,255,255,.2); color: #fff; }
+      .toolbar button[aria-pressed="true"] { border-color: rgba(34,211,238,.45); background: rgba(34,211,238,.1); color: #67e8f9; }
+      .stage { display: grid; place-items: start center; padding: 24px 16px 40px; }
+      .scaler { display: flex; flex-direction: column; align-items: center; transform-origin: top center; }
+      .phone { width: fit-content; }
+
+      /* Moldura base */
+      .phone { position: relative; padding: 12px; border-radius: 46px; background: linear-gradient(145deg, #2a3142, #11151f 40%, #1b2130); box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 40px 100px -30px rgba(0,0,0,.9), inset 0 0 0 2px rgba(255,255,255,.04); }
+      .screen { position: relative; overflow: hidden; border-radius: 34px; background: #0b0f19; }
+      .screen iframe { display: block; border: 0; background: #0b0f19; }
+      .cutout, .speaker, .chin { display: none; position: absolute; left: 50%; z-index: 1; transform: translateX(-50%); pointer-events: none; }
+
+      /* iPhone: Dynamic Island */
+      .phone[data-style="island"] { padding: 14px; border-radius: 56px; }
+      .phone[data-style="island"] .screen { border-radius: 44px; }
+      .phone[data-style="island"] .cutout { display: block; top: 11px; width: 112px; height: 32px; border-radius: 20px; background: #000; }
+
+      /* Galaxy A03 Core / A04e / A05: notch em gota (Infinity-V) */
+      .phone[data-style="drop"] { padding: 10px 10px 18px; border-radius: 40px; background: linear-gradient(145deg, #1f2533, #0d1018 45%, #171c27); }
+      .phone[data-style="drop"] .screen { border-radius: 30px 30px 26px 26px; }
+      .phone[data-style="drop"] .cutout { display: block; top: 0; width: 30px; height: 24px; border-radius: 0 0 15px 15px; background: #000; }
+      .phone[data-style="drop"] .cutout::after { content: ""; position: absolute; top: 7px; left: 50%; width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #1e293b, #020617); transform: translateX(-50%); }
+
+      /* Galaxy A15: câmara em furo (Infinity-U pequeno) */
+      .phone[data-style="hole"] { padding: 10px; border-radius: 42px; }
+      .phone[data-style="hole"] .screen { border-radius: 32px; }
+      .phone[data-style="hole"] .cutout { display: block; top: 12px; width: 13px; height: 13px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #1e293b, #000); }
+
+      /* Galaxy J2 Core: bordas largas em cima e em baixo */
+      .phone[data-style="bezel"] { padding: 58px 12px 58px; border-radius: 38px; background: linear-gradient(160deg, #262c3a, #10131b 50%, #1a1f2b); }
+      .phone[data-style="bezel"] .screen { border-radius: 4px; }
+      .phone[data-style="bezel"] .speaker { display: block; top: 26px; width: 56px; height: 6px; border-radius: 3px; background: #05070c; box-shadow: inset 0 1px 1px rgba(255,255,255,.06); }
+      .phone[data-style="bezel"] .chin { display: block; bottom: 20px; width: 64px; height: 18px; border-radius: 9px; border: 1px solid rgba(255,255,255,.07); }
+
+      /* Barras do sistema e do navegador: o site só ocupa a área entre elas, como num telemóvel real. */
+      .screen { display: flex; flex-direction: column; }
+      .sys { display: flex; flex: none; align-items: center; justify-content: space-between; padding: 0 16px; color: #e2e8f0; font-size: 12px; font-weight: 600; background: #0b0f19; }
+      .sys-status { height: 24px; }
+      .sys-icons { display: flex; align-items: center; gap: 5px; }
+      .sys-icons i { display: block; width: 3px; border-radius: 1px; background: #e2e8f0; }
+      .sys-icons i:nth-child(1) { height: 5px; } .sys-icons i:nth-child(2) { height: 7px; } .sys-icons i:nth-child(3) { height: 9px; }
+      .sys-battery { width: 20px; height: 10px; margin-left: 4px; border: 1.5px solid #e2e8f0; border-radius: 3px; background: linear-gradient(90deg, #e2e8f0 70%, transparent 70%) content-box; padding: 1px; }
+      .sys-url { gap: 10px; height: 56px; padding: 0 10px; background: #1f2430; }
+      .sys-url .pill { display: flex; flex: 1; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 19px; background: #2d3343; color: #cbd5e1; font-weight: 400; font-size: 13px; overflow: hidden; white-space: nowrap; }
+      .sys-url .lock { width: 9px; height: 10px; border: 1.5px solid #94a3b8; border-radius: 2px; position: relative; flex: none; }
+      .sys-url .lock::before { content: ""; position: absolute; left: 50%; top: -6px; width: 7px; height: 6px; border: 1.5px solid #94a3b8; border-bottom: 0; border-radius: 4px 4px 0 0; transform: translateX(-50%); }
+      .sys-url .tabs { display: grid; place-items: center; width: 20px; height: 20px; border: 1.5px solid #cbd5e1; border-radius: 5px; font-size: 10px; flex: none; }
+      .sys-url .dots { width: 4px; height: 4px; border-radius: 50%; background: #cbd5e1; box-shadow: 0 -7px #cbd5e1, 0 7px #cbd5e1; flex: none; margin-right: 4px; }
+      .sys-nav { justify-content: space-around; height: 48px; background: #05070c; }
+      .sys-nav i { display: block; width: 14px; height: 14px; border: 2px solid #94a3b8; }
+      .sys-nav i:nth-child(1) { border-radius: 2px; }
+      .sys-nav i:nth-child(2) { border-radius: 50%; }
+      .sys-nav i:nth-child(3) { width: 0; height: 0; border-width: 7px 12px 7px 0; border-color: transparent #94a3b8 transparent transparent; }
+      .sys-ios-top { height: 47px; padding: 0 30px; }
+      .sys-ios-bottom { flex-direction: column; justify-content: flex-start; gap: 0; height: 84px; padding: 8px 12px 0; background: #1c212c; }
+      .sys-ios-bottom .pill { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 42px; border-radius: 12px; background: #2d3343; color: #e2e8f0; font-weight: 400; font-size: 14px; }
+      .sys-ios-bottom .home { width: 134px; height: 5px; margin-top: auto; margin-bottom: 8px; border-radius: 3px; background: #e2e8f0; }
+      .phone:not([data-style="island"]) .sys-ios-top, .phone:not([data-style="island"]) .sys-ios-bottom { display: none; }
+      .phone[data-style="island"] .sys-status, .phone[data-style="island"] .sys-url, .phone[data-style="island"] .sys-nav { display: none; }
+
+      .meta { max-width: 420px; margin-top: 14px; color: #94a3b8; font-size: 12px; line-height: 1.5; text-align: center; }
+      .meta b { color: #e2e8f0; font-weight: 600; }
+      .meta span { display: block; margin-top: 4px; color: #64748b; }
+    </style>
+  </head>
+  <body>
+    <div class="toolbar" role="toolbar" aria-label="Opções de simulação">
+      <div class="group">
+        <span class="label">Samsung entrada</span>
+        <button type="button" data-device="360x800" data-style="drop" data-name="Galaxy A03 Core / A04e / A05" data-spec="Unisoc SC9863A · Helio P35 · Helio G85 · 2 a 4 GB RAM · ecrã HD+ 720×1600" aria-pressed="true">A03 Core / A05 · 360</button>
+        <button type="button" data-device="412x891" data-style="hole" data-name="Galaxy A15" data-spec="Helio G99 · 4 a 8 GB RAM · ecrã FHD+ 1080×2340" aria-pressed="false">A15 · 412</button>
+        <button type="button" data-device="360x640" data-style="bezel" data-name="Galaxy J2 Core" data-spec="Exynos 7570 · 1 GB RAM · Android Go · ecrã qHD 540×960" aria-pressed="false">J2 Core · 360</button>
+      </div>
+      <div class="group">
+        <span class="label">Outros</span>
+        <button type="button" data-device="390x844" data-style="island" data-name="iPhone 15" data-spec="Referência iOS" aria-pressed="false">iPhone 15 · 390</button>
+        <button type="button" data-device="375x667" data-style="bezel" data-name="iPhone SE" data-spec="Ecrã pequeno com bordas" aria-pressed="false">iPhone SE · 375</button>
+        <button type="button" data-device="320x640" data-style="hole" data-name="Compacto" data-spec="Largura mínima suportada" aria-pressed="false">320</button>
+      </div>
+      <div class="group">
+        <button type="button" id="reload">Recarregar</button>
+        <a href="/" target="_blank" rel="noopener">Abrir site</a>
+      </div>
+    </div>
+
+    <main class="stage">
+      <div class="scaler" id="scaler">
+        <div class="phone" id="phone" data-style="drop">
+          <div class="cutout" aria-hidden="true"></div>
+          <div class="speaker" aria-hidden="true"></div>
+          <div class="screen" id="screen">
+            <div class="sys sys-status" aria-hidden="true"><span>9:41</span><span class="sys-icons"><i></i><i></i><i></i><span class="sys-battery"></span></span></div>
+            <div class="sys sys-url" aria-hidden="true"><span class="pill"><span class="lock"></span><span class="host"></span></span><span class="tabs">1</span><span class="dots"></span></div>
+            <div class="sys sys-ios-top" aria-hidden="true"><span>9:41</span><span class="sys-icons"><i></i><i></i><i></i><span class="sys-battery"></span></span></div>
+            <iframe id="frame" src="/" title="Site Nexus System em ecrã de telemóvel" width="360" height="672"></iframe>
+            <div class="sys sys-nav" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="sys sys-ios-bottom" aria-hidden="true"><span class="pill"><span class="lock"></span><span class="host"></span></span><span class="home"></span></div>
+          </div>
+          <div class="chin" aria-hidden="true"></div>
+        </div>
+        <p class="meta" id="meta"></p>
+      </div>
+    </main>
+
+    <script>
+      const frame = document.getElementById('frame')
+      const phone = document.getElementById('phone')
+      const scaler = document.getElementById('scaler')
+      const meta = document.getElementById('meta')
+      const buttons = [...document.querySelectorAll('[data-device]')]
+
+      // Reduz a moldura para caber na altura da janela, sem alterar a largura real do iframe.
+      const fit = () => {
+        scaler.style.transform = 'none'
+        scaler.style.marginBottom = '0'
+        const available = window.innerHeight - 130
+        const height = scaler.offsetHeight
+        const scale = Math.min(1, available / height)
+        scaler.style.transform = `scale(${scale})`
+        scaler.style.marginBottom = `${(scale - 1) * height}px`
+      }
+
+      // Altura ocupada pelas barras do sistema/navegador em cada tipo de aparelho.
+      // Android (Chrome): estado 24 + endereço 56 + navegação 48. iPhone (Safari): estado 47 + barra inferior 84.
+      const CHROME_HEIGHT = { island: 47 + 84, drop: 24 + 56 + 48, hole: 24 + 56 + 48, bezel: 24 + 56 + 48 }
+      document.querySelectorAll('.host').forEach((node) => (node.textContent = location.host))
+
+      const describe = (button, width, screenHeight, viewportHeight) => {
+        meta.replaceChildren()
+        const title = document.createElement('b')
+        title.textContent = button.dataset.name
+        const spec = document.createElement('span')
+        spec.textContent = `${button.dataset.spec} · ecrã ${width}×${screenHeight} · área visível do site ${width}×${viewportHeight} px`
+        meta.append(title, spec)
+      }
+
+      const setDevice = (button, reload = true) => {
+        const [width, height] = button.dataset.device.split('x').map(Number)
+        const viewportHeight = height - (CHROME_HEIGHT[button.dataset.style] ?? 0)
+        frame.width = width
+        frame.height = viewportHeight
+        phone.dataset.style = button.dataset.style
+        buttons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)))
+        describe(button, width, height, viewportHeight)
+        // O site recarrega sozinho ao mudar de breakpoint; aqui forçamos para aplicar o novo tamanho de imediato.
+        if (reload) frame.src = '/'
+        requestAnimationFrame(fit)
+      }
+
+      // Num telemóvel a barra de scroll é sobreposta e invisível; esconde-se a do desktop dentro do ecrã simulado.
+      frame.addEventListener('load', () => {
+        const doc = frame.contentDocument
+        if (!doc) return
+        const style = doc.createElement('style')
+        style.textContent = 'html{scrollbar-width:none}html::-webkit-scrollbar{display:none}'
+        doc.head.append(style)
+      })
+
+      buttons.forEach((button) => button.addEventListener('click', () => setDevice(button)))
+      document.getElementById('reload').addEventListener('click', () => frame.contentWindow?.location.reload())
+      window.addEventListener('resize', fit)
+      setDevice(buttons.find((button) => button.getAttribute('aria-pressed') === 'true') ?? buttons[0], false)
+    </script>
+  </body>
+</html>

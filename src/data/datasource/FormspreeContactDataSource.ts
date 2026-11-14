@@ -7,7 +7,7 @@ const REQUEST_TIMEOUT_MS = 10_000
 
 /**
  * Implementação do ContactRepository usando Formspree.
- * Configure `VITE_FORMSPREE_ENDPOINT` no ficheiro `.env`.
+ * Configure `VITE_FORMSPREE_ENDPOINT` no arquivo `.env`.
  */
 export class FormspreeContactDataSource implements ContactRepository {
   constructor(private readonly endpoint: string | undefined) {}
@@ -20,7 +20,7 @@ export class FormspreeContactDataSource implements ContactRepository {
         await new Promise((resolve) => setTimeout(resolve, 900))
         return { ok: true }
       }
-      return { ok: false, error: 'O formulário ainda não está configurado. Contacte-nos por email ou WhatsApp.' }
+      return { ok: false, error: 'O formulário ainda não está configurado. Entre em contato por e-mail ou WhatsApp.' }
     }
 
     const controller = new AbortController()
@@ -35,7 +35,7 @@ export class FormspreeContactDataSource implements ContactRepository {
       })
       return await fromFormspreeResponse(response)
     } catch {
-      return { ok: false, error: 'Falha de ligação. Verifique a sua internet e tente novamente.' }
+      return { ok: false, error: 'Falha de conexão. Verifique sua internet e tente novamente.' }
     } finally {
       clearTimeout(timeout)
     }

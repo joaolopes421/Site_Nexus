@@ -1,5 +1,5 @@
 /**
- * Mensagem de contacto enviada por um potencial cliente (lead).
+ * Mensagem de contato enviada por um potencial cliente (lead).
  * Entidade de domínio pura: não conhece React, APIs ou formatos externos.
  */
 export interface ContactMessage {

@@ -12,10 +12,12 @@ export interface Service {
 
 /** Pilar da proposta de valor (Personalização, Segurança, Inovação). */
 export interface Pillar {
-  id: string
+  id: 'personalizacao' | 'seguranca' | 'inovacao'
   title: string
   description: string
   icon: LucideIcon
+  /** Itens concretos que materializam o pilar (módulos, garantias, capacidades). */
+  highlights: string[]
 }
 
 /** Diferencial competitivo / etapa da metodologia. */
@@ -26,3 +28,9 @@ export interface Differential {
   description: string
 }
 
+/** Passo do que acontece depois de uma solicitação de contato. */
+export interface ContactStep {
+  id: string
+  title: string
+  description: string
+}
